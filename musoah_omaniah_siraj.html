@@ -1,0 +1,887 @@
+ 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموسوعة العمانية - فريق سراج عمان</title>
+    <!-- Google Fonts for joyful typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- QRious library for generating QR codes easily -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #FFF6F4 0%, #E8F8F5 50%, #FEF9E7 100%);
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --purple: #9B5DE5;
+            --orange: #F77F00;
+            --text-dark: #2D3748;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --shadow-3d: 0 10px 25px rgba(0,0,0,0.08), 0 20px 48px rgba(78, 205, 196, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            perspective: 1200px;
+        }
+
+        /* 3D Header Section */
+        header {
+            text-align: center;
+            padding: 50px 20px 30px;
+            transform-style: preserve-3d;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #FF4A5A;
+            text-shadow: 0 5px 15px rgba(255, 74, 90, 0.3), 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateZ(40px);
+            margin-bottom: 10px;
+            animation: floatTitle 3s ease-in-out infinite alternate;
+        }
+
+        .sub-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2EC4B6;
+            text-shadow: 0 3px 10px rgba(46, 196, 182, 0.2);
+            transform: translateZ(25px);
+            margin-bottom: 20px;
+        }
+
+        @keyframes floatTitle {
+            0% { transform: translateY(0) translateZ(40px); }
+            100% { transform: translateY(-8px) translateZ(45px); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Views management */
+        .view {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Categories Grid (3D Cards) */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px 0 50px;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 35px 25px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-3d);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 100%; height: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .category-card:hover {
+            transform: translateY(-12px) rotateX(5deg) rotateY(-5deg) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12), 0 30px 60px rgba(255, 107, 107, 0.25);
+            border-color: var(--secondary);
+        }
+
+        .category-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            transform: translateZ(30px);
+            animation: bounceIcon 2s infinite ease-in-out;
+        }
+
+        @keyframes bounceIcon {
+            0%, 100% { transform: translateY(0) translateZ(30px); }
+            50% { transform: translateY(-8px) translateZ(35px); }
+        }
+
+        .category-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            transform: translateZ(20px);
+            margin-bottom: 10px;
+        }
+
+        .category-desc {
+            font-size: 0.95rem;
+            color: #666;
+            transform: translateZ(15px);
+        }
+
+        /* Subpages view */
+        .subpages-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            transform: translateZ(10px);
+        }
+
+        .back-btn:hover {
+            background: #ff5252;
+            transform: translateY(-3px) translateZ(15px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .subpages-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .subpage-tab {
+            background: white;
+            border: 2px solid #E2E8F0;
+            padding: 12px 22px;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .subpage-tab.active, .subpage-tab:hover {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .subpage-content-box {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-3d);
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+            border: 3px solid rgba(78, 205, 196, 0.2);
+        }
+
+        .subpage-content-box.active {
+            display: block;
+        }
+
+        .subpage-title {
+            font-size: 2rem;
+            color: var(--purple);
+            margin-bottom: 20px;
+            font-weight: 800;
+            border-bottom: 3px solid #F0F4F8;
+            padding-bottom: 15px;
+        }
+
+        .info-section, .quiz-section {
+            margin-bottom: 30px;
+            background: #F8FBFC;
+            padding: 25px;
+            border-radius: 18px;
+            border-right: 6px solid var(--secondary);
+        }
+
+        .quiz-section {
+            border-right-color: var(--primary);
+            background: #FFF9F9;
+        }
+
+        .section-heading {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #4A5568;
+        }
+
+        .question-box {
+            margin-top: 15px;
+        }
+
+        .question-text {
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 10px;
+        }
+
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-item {
+            background: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 2px solid #E2E8F0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary);
+            background: #FFF5F5;
+        }
+
+        .option-item.correct {
+            background: #C6F6D5;
+            border-color: #38A169;
+            color: #22543D;
+        }
+
+        .option-item.incorrect {
+            background: #FED7D7;
+            border-color: #E53E3E;
+            color: #742A2A;
+        }
+
+        .feedback {
+            margin-top: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        /* QR Codes Section */
+        .qr-section {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            margin-top: 50px;
+            box-shadow: var(--shadow-3d);
+            text-align: center;
+        }
+
+        .qr-title {
+            font-size: 2rem;
+            color: #2D3748;
+            margin-bottom: 30px;
+            font-weight: 800;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .qr-card {
+            background: #F8FBFC;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.04);
+            border: 2px solid #E2E8F0;
+            transition: transform 0.3s ease;
+        }
+
+        .qr-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+        }
+
+        .qr-canvas-wrap {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .qr-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 8px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .qr-label a {
+            color: var(--purple);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .qr-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #718096;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        @media(max-width: 768px) {
+            .main-title { font-size: 2.5rem; }
+            .sub-title { font-size: 1.3rem; }
+            .subpages-header { flex-direction: column; gap: 15px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="main-title">الموسوعة العمانية</h1>
+        <h2 class="sub-title">فريق سراج عمان</h2>
+    </header>
+
+    <div class="container">
+        <!-- Main View: Categories -->
+        <div id="mainView" class="view active">
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Generated dynamically via JS -->
+            </div>
+
+            <!-- QR Codes Section on Main Page -->
+            <div class="qr-section">
+                <h3 class="qr-title">📱 باركودات مرئية وتعليمية وثقافية</h3>
+                <div class="qr-grid">
+                    <div class="qr-card">
+                        <div class="qr-canvas-wrap"><canvas id="qr1"></canvas></div>
+                        <div class="qr-label"> الموسوعة العمانية للناشئة<br><a href="https://youtu.be/IJu64RX_9x8?si=FCP2MDO6q6X5nIGM" target="_blank">رابط يوتيوب</a></div>
+                    </div>
+                    <div class="qr-card">
+                        <div class="qr-canvas-wrap"><canvas id="qr2"></canvas></div>
+                        <div class="qr-label"> OM
+ 
+الذهب | أبجديات ثقافية عُمانية <br><a href= "https://youtu.be/Iltx7bll0fI?si=7opBm-Dg_cIh0dGn " target="_blank">رابط وزارة الثقافة</a></div>
+                    </div>
+                    <div class="qr-card">
+                        <div class="qr-canvas-wrap"><canvas id="qr3"></canvas></div>
+                        <div class="qr-label"> OM
+ 
+الحليّ العُمانية | أبجديات ثقافية عُمانية  <br><a href=" https://youtu.be/Nx5qRUo-2EY?si=xVIsmE_R_5lVZD-R" target="_blank">رابط وزارة الثقافة</a></div>
+                    </div>
+                    <div class="qr-card">
+                        <div class="qr-canvas-wrap"><canvas id="qr4"></canvas></div>
+                        <div class="qr-label"> OM
+  
+ 
+التومينة | أبجديات ثقافية <br><a href=" https://www.youtube.com/watch?v=1ByigaPS6Rc" target="_blank">رابط وزارة الثقافة</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subpages View -->
+        <div id="subView" class="view">
+            <div class="subpages-header">
+                <h2 id="currentCategoryTitle" style="color: var(--purple); font-size: 1.8rem;">عنوان الفئة</h2>
+                <button class="back-btn" onclick="showMainView()">⬅ العودة إلى الصفحة الرئيسية</button>
+            </div>
+
+            <div class="subpages-tabs" id="subpagesTabs">
+                <!-- Tabs generated dynamically -->
+            </div>
+
+            <div id="subpagesContentContainer">
+                <!-- Subpages content generated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+          جميع الحقوق محفوظة © فريق سراج عمان 2026 | الموسوعة العمانية الشاملة |مدرسة بلقيس (٧–١٠)
+    </footer>
+
+    <script>
+        // Data structure for 7 categories, each with 5 pages, each page has detailed info and a quiz question
+        const encyclopediaData = {
+            "history": {
+                name: "التاريخ",
+                icon: "🏛️",
+                desc: "تاريخ عمان العريق الممتد عبر آلاف السنين والحضارات المتعاقبة",
+                pages: [
+                    {
+                        title: "الصفحة الأولى: عمان في العصور القديمة ومجان",
+                        info: "تعتبر عمان من أقدم المناطق استوطاناً في شبه الجزيرة العربية، حيث عرفت في النصوص السومرية باسم (مجان) لشهرتها بصهر النحاس وتجارة النحاس والأحجار الكريمة مع حضارات بلاد ما بين النهرين ووادي السند منذ الألف الثالث قبل الميلاد.",
+                        question: "ما الاسم التاريخي الذي أطلقته النصوص السومرية القديمة على عمان لشهرة تجارتها بالنحاس؟",
+                        options: ["مجان", "تاروت", "دلمون", "أوفال"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثانية: دخول الإسلام وعهد الخلفاء الراشدين",
+                        info: "دخل أهل عمان الإسلام طوعاً في عهد النبي محمد صلى الله عليه وسلم في السنة الثامنة للهجرة بقيادة مازن بن غضوبة، ولعب العمانيون دوراً بارزاً في نشر الإسلام وتثبيت أركانه خلال فتوحات الخلفاء الراشدين.",
+                        question: "من هو الصحابي الذي يقال إنه قاد أهل عمان لدخول الإسلام وبنى مسجد الجامع ببدية؟",
+                        options: ["مازن بن غضوبة", "المهلب بن أبي صفرة", "الجلندى بن مستكبر", "مالك بن فهم"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثالثة: الدولة اليعاربة وبطولات طرد الأطماع",
+                        info: "تأسست دولة اليعاربة عام 1624م على يد الإمام ناصر بن مورشد، وشهدت عمان في عهدهم نهضة كبرى ووحدة وطنية توجت بطرد الاستعمار البرتغالي من موانئ عمان وبناء الأسطول البحري القوي.",
+                        question: "في أي عام تأسست دولة اليعاربة التي قامت بطرد المستعمرين البرتغاليين؟",
+                        options: ["1624م", "1744م", "1507م", "1856م"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الرابعة: الدولة البوسعيدية وامتداد الإمبراطورية",
+                        info: "تأسست الدولة البوسعيدية عام 1744م على يد الإمام أحمد بن سعيد البوسعيدي. في القرن التاسع عشر، امتدت الإمبراطورية العمانية لتشمل أجزاء واسعة من سواحل شرق أفريقيا والخليج العربي، وأصبحت زنجبار عاصمة ثانية.",
+                        question: "من هو مؤسس الدولة البوسعيدية في عمان؟",
+                        options: ["الإمام أحمد بن سعيد", "السيد سعيد بن سلطان", "الإمام ناصر بن مورشد", "قس بن ساعدة"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الخامسة: النهضة العمانية الحديثة",
+                        info: "انطلقت مسيرة النهضة المباركة في 23 يوليو 1970م بقيادة السلطان قابوس بن سعيد -طيب الله ثراه- لبناء دولة حديثة راسخة الأركان، وتستمر مسيرة العطاء والنماء في العهد المتجدد لحضرة صاحب الجلالة السلطان هيثم بن طارق المعظم -حفظه الله ورعاه-.",
+                        question: "في أي تاريخ انطلقت مسيرة النهضة العمانية الحديثة؟",
+                        options: ["23 يوليو 1970", "18 نوفمبر 1940", "11 يناير 2020", "23 يوليو 1980"],
+                        correct: 0
+                    }
+                ]
+            },
+            "geography": {
+                name: "الجغرافيا",
+                icon: "🌄",
+                desc: "التنوع الجغرافي الفريد من سلاسل جبلية وسواحل وصحاري وواحات خضراء",
+                pages: [
+                    {
+                        title: "الصفحة الأولى: الموقع الفلكي والجغرافي",
+                        info: "تقع سلطنة عمان في الركن الجنوبي الشرقي من شبه الجزيرة العربية، وتطل على مساحات بحرية واسعة تشمل بحر العرب، وخليج عمان، ومضيق هرمز الحيوي، وتحدها الإمارات والسعودية ويمنياً.",
+                        question: "أي مضيق استراتيجي حيوي تطل عليه سلطنة عمان في الشمال؟",
+                        options: ["مضيق هرمز", "مضيق باب المندب", "قناة السويس", "مضيق جبل طارق"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثانية: سلسلة جبال الحجر والقمم الشامخة",
+                        info: "تمتد سلسلة جبال الحجر في الشمال مسافة طويلة، وتضم أعلى قمة جبلية في السلطنة وهي قمة جبل شمس في جبل الحجر الغربي بارتفاع يتجاوز 3000 متر فوق سطح البحر، وتتميز بجوها البارد وأخدودها العميق.",
+                        question: "ما اسم أعلى قمة جبلية في سلطنة عمان؟",
+                        options: ["جبل شمس", "جبل الأخضر", "جبل قمه", "جبل الكور"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثالثة: السهول الساحلية والواحات",
+                        info: "تتميز عمان بسهول ساحلية خصبة مثل سهل الباطنة الذي يُعد سلة غذاء عمان الزراعية نظراً لتوفر المياه الجوفية، بالإضافة إلى سهول صلالة وواحات الداخلية والباطنة والظاهرة التي تشتهر بفلج الأفلاج ونظم الري التقليدية.",
+                        question: "ما هو السهل الساحلي الذي يشتهر بكونه السلة الزراعية الرئيسية في سلطنة عمان؟",
+                        options: ["سهل الباطنة", "سهل صلالة", "سهل نزوى", "سهل صور"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الرابعة: صحراء الربع الخالي وعمان الشرقية",
+                        info: "تغطي الرمال الكثبان الذهبية أجزاء واسعة من السلطنة مثل رمال الشرقية (وهبي) وأطراف صحراء الربع الخالي، وهي مناطق تتميز بجمال طبيعي خلاب وتجارب سياحية عالمية فريدة.",
+                        question: "بماذا تسمى رمال الشرقية الشهيرة بكثبانها الرملية الذهبية أحياناً؟",
+                        options: ["رمال وهبي", "صحراء سيناء", "الربع الشمالي", "صحراء النقب"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الخامسة: المحميات الطبيعية والتنوع البيئي",
+                        info: "تضم عمان العديد من المحميات الطبيعية مثل محمية المها العربية في الوهيبة وجزر الديمانيات ومحمية السلاحف برأس الجنز، وهي بيئات غنية بالتنوع الحيوي والحيوانات والطيور النادرة.",
+                        question: "أين تقع المحمية الشهيرة المخصصة لحماية السلاحف البحرية في عمان؟",
+                        options: ["رأس الجنز", "جزيرة مسيرة", "قريات", "الخوير"],
+                        correct: 0
+                    }
+                ]
+            },
+            "culture": {
+                name: "الثقافة والتراث",
+                icon: "🎨",
+                desc: "الفنون الشعبية العريقة، الحرف اليدوية، العمارة العمانية الأصيلة والتراث العالمي",
+                pages: [
+                    {
+                        title: "الصفحة الأولى: القلاع والحصون التاريخية",
+                        info: "تحتضن عمان أكثر من 500 قلعة وحصن تتوزع في مختلف المحافظات، وتعتبر قلعة نزوى وحصن بهلا وقلعة فنجاء وقلعة الجلالي والميراني من أهم الشواهد المعمارية الهندسية العسكرية.",
+                        question: "أي من المواقع التالية أُدرج ضمن قائمة التراث العالمي لليونسكو ويعتبر من أشهر الحصون؟",
+                        options: ["حصن بهلا", "قلعة قريات", "حصن الخابورة", "قلعة ينقل"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثانية: الخنجر العماني والفنون التقليدية",
+                        info: "يُعتبر الخنجر العماني رمزاً وطنياً وهيبة للرجل العماني، ويُصنع بمهارة يدوية فائقة. كما تشتهر الفنون العمانية بفنون الرزحة، العازي، والبرعة التي أُدرجت في قائمة التراث الثقافي غير المادي لليونسكو.",
+                        question: "أي من الفنون التالية أُدرج في قائمة التراث العالمي غير المادي لليونسكو في ظفار؟",
+                        options: ["البرعة", "الليوا", "الدان دان", "الميدان"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثالثة: الفنون الحرفية والصناعات التقليدية",
+                        info: "تزخر عمان بصناعات تقليدية غنية مثل صناعة الفخار في نزوى، السعفيات، النسيج والصناعات الفضية والخنجر، والتي تعكس إبداع الإنسان العماني في تطويع بيئته المحلية.",
+                        question: "ما هي المدينة العمانية التي تشتهر تاريخياً بصناعة الفخار والخزف التقليدي؟",
+                        options: ["نزوى", "صلالة", "خصب", "صور"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الرابعة: الفلك ونظام الأفلاج العمانية",
+                        info: "الأفلاج هي نظام ري تقليدي عبقري فريد من نوعه يعتمد على قنوات المياه الأرضية والجوفية لتوزيع المياه بعدالة فائقة بين الأهالي، وقد أدرجت خمسة أفلاج عمانية في قائمة التراث العالمي لليونسكو.",
+                        question: "كم عدد الأفلاج العمانية المدرجة في قائمة التراث العالمي لليونسكو؟",
+                        options: ["5 أفلاج", "2 أفلاج", "10 أفلاج", "فلج واحد"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الخامسة: المأكولات العمانية التقليدية",
+                        info: "تتميز المائدة العمانية بأطباق أصيلة ولذيذة مثل (الشكشوكة والقبولي)، و(المقلي)، وتتربع (الحلوة العمانية) على عرش الضيافة العمانية الأصيلة التي تصنع بأجود أنواع السمن والعسل والفواكه والمكسرات.",
+                        question: "ما هو الطبق الحلو التقليدي الأكثر شهرة في الضيافة العمانية والمناسبات؟",
+                        options: ["الحلوة العمانية", "الكنافة", "البقلاوة", "العصيدة"],
+                        correct: 0
+                    }
+                ]
+            },
+            "society": {
+                name: "المجتمع",
+                icon: "🤝",
+                desc: "القيم الاجتماعية، التكافل، التسامح، والروابط الأسرية العريقة",
+                pages: [
+                    {
+                        title: "الصفحة الأولى: القيم الأصيلة والتكافل الاجتماعي",
+                        info: "يقوم المجتمع العماني على منظومة قيمية راسخة من التكافل والتعاون، وتتجلى هذه القيم في الممارسات الاجتماعية مثل (الوكاة) و(الفزعة) ومساعدة المحتاجين وإكرام الضيف كركيزة أساسية.",
+                        question: "ماذا يسمى مبدأ التعاون والتكاتف المجتمعي لمساعدة الآخرين في الثقافة العمانية؟",
+                        options: ["الفزعة (التكاتف)", "الفردية", "الانعزال", "التنافس"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثانية: مجالس الوئام والألفة (السبلة العمانية)",
+                        info: "السبلة العمانية هي المجلس التقليدي الملحق بكل منزل أو قرية، وتُعد مدرسة اجتماعية كبرى لفض المنازعات، واستقبال الضيوف، ومناقشة قضايا المجتمع، وتعزيز أواصر الترابط والإخاء.",
+                        question: "ما هو الاسم الذي يطلق على المجلس التقليدي العماني لاستقبال الضيوف وحل المشاورات؟",
+                        options: ["السبلة العمانية", "الديوان", "المجلس الأعلى", "الخيمة"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثالثة: دور المرأة العمانية في البناء والتميّز",
+                        info: "حظيت المرأة العمانية بمكانة رفيعة ودعم مستمر جعلها شريكاً أساسياً في التنمية المستدامة، حيث تتقلد أعلى المناصب الوزارية والدبلوماسية والقضائية والعلمية بكل كفاءة واقتدار.",
+                        question: "أي يوم احتفالي سنوي يخصص للاحتفاء بجهود ومكانة المرأة العمانية؟",
+                        options: ["17 أكتوبر", "8 مارس", "1 يناير", "18 نوفمبر"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الرابعة: الشباب والعمل التطوعي",
+                        info: "يُعد الشباب العماني عماد الحاضر وبناة المستقبل، وتبرز روح المبادرة لديهم من خلال الفرق التطوعية والجمعيات الخيرية والأندية الرياضية والثقافية التي تخدم المجتمع في مختلف الظروف.",
+                        question: "ماذا تُسمى عادة المجموعات والفرق الشبابية المنظمة لخدمة المجتمع في الولايات؟",
+                        options: ["الفرق التطوعية", "الشركات التجارية", "اللجان الأمنية", "البعثات"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الخامسة: التسامح والتعايش السلمي",
+                        info: "تشتهر سلطنة عمان دولياً بأنها واحة أمن وأمان وسلام، حيث يعيش الجميع على أرضها بمختلف ثقافاتهم ومعتقداتهم في ظل قيم التسامح والاحترام المتبادل والقبول بالآخر.",
+                        question: "بماذا تُعرف السياسة والثقافة العمانية في العلاقات الدولية والمحلية؟",
+                        options: ["السلام والتعايش والتسامح", "التشدد", "الانغلاق", "الحياد السلبي"],
+                        correct: 0
+                    }
+                ]
+            },
+            "economy": {
+                name: "الاقتصاد",
+                icon: "📈",
+                desc: "رؤية عمان 2040، تنويع مصادر الدخل، الطاقة، والأسواق التجارية",
+                pages: [
+                    {
+                        title: "الصفحة الأولى: رؤية عمان 2040 والتنويع الاقتصادي",
+                        info: "تُمثل رؤية عمان 2040 بوصلة المستقبل للارتقاء بالاقتصاد الوطني نحو تنويع مصادر الدخل وتقليل الاعتماد على النفط، من خلال التركيز على قطاعات السياحة، اللوجستيات، التعدين، والصناعات التحويلية.",
+                        question: "ما هي البوصلة الاستراتيجية للتنمية الشاملة في سلطنة عمان للمستقبل؟",
+                        options: ["رؤية عمان 2040", "خطة الألفية", "مشروع القرن", "رؤية 2030"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثانية: قطاع الطاقة والنفط والغاز",
+                        info: "لعب قطاع النفط والغاز دوراً محورياً في تمويل مشاريع البنية الأساسية، وفي السنوات الأخيرة تتجه عمان بقوة نحو الاستثمار في مشاريع الطاقة المتجددة والنظيفة وخاصة الهيدروجين الأخضر.",
+                        question: "ما هو نوع الطاقة المستقبلية النظيفة التي تستثمر فيها عمان بقوة حالياً؟",
+                        options: ["الهيدروجين الأخضر", "الطاقة النووية الحارقة", "الفحم الحجري", "الغاز الصخري فقط"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثالثة: القطاع اللوجستي والموانئ الكبرى",
+                        info: "تتمتع عمان بموقع جغرافي استراتيجي على خطوط التجارة الدولية، وتضم موانئ عالمية كبرى مثل ميناء صلالة وميناء الدقم وميناء صحار، والتي تربط الشرق بالغرب بكفاءة عالية.",
+                        question: "أي من الموانئ العمانية التالية يقع في المحافظة الوسطى ويعد مركزاً اقتصادياً عملاقاً؟",
+                        options: ["ميناء الدقم", "ميناء السلطان قابوس", "ميناء شناص", "ميناء خصب"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الرابعة: السياحة العمانية الفريدة",
+                        info: "تزخر عمان بمقومات سياحية طبيعية وتاريخية لا تُقادر بثمن، من شواطئ وجبال وصحار وواحات، مما جعلها وجهة عالمية مفضلة للسياحة البيئية والثقافية والمغامرات.",
+                        question: "أي فصل من السنة تشتهر فيه محافظة ظفار بسياحة استثنائية وجو مأهول بالأمطار والضباب؟",
+                        options: ["موسم الخريف", "فصل الشتاء الجاف", "فصل الربيع", "فصل الصيف الحارق"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الخامسة: الأسواق التقليدية والشركات الناشئة",
+                        info: "تجمع الأسواق الشعبية مثل سوق مطرح ونزوى بين عراقة التجارة القديمة وروح العصر، بالتوازي مع الدعم الحكومي الواسع للشركات الناشئة وريادة الأعمال والابتكار الرقمي.",
+                        question: "ما هو أحد أشهر الأسواق التقليدية التراثية في مسقط المتاجر بالفضيات والعطور؟",
+                        options: ["سوق مطرح", "سوق السمك القديم", "سوق السيب", "سوق البريمي"],
+                        correct: 0
+                    }
+                ]
+            },
+            "personalities": {
+                name: "الشخصيات العمانية",
+                icon: "🌟",
+                desc: "أعلام الفكر، الأدب، العلوم، والملاحة البحرية عبر التاريخ",
+                pages: [
+                    {
+                        title: "الصفحة الأولى: الملاح العماني أحمد بن ماجد",
+                        info: "أحمد بن ماجد السعدي هو ملاح وجغرافي عماني شهير يُلقب بـ (أسد البحار)، وله مؤلفات بحرية خالدة في علم الملاحة والفلك، وكان له الفضل في إرشاد الفاسكو دي جاما في المحيط الهندي.",
+                        question: "ما هو اللقب الشهير للملاح العماني البارز أحمد بن ماجد؟",
+                        options: ["أسد البحار", "ملك الصحراء", "أمير الشعراء", "حكيم العرب"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثانية: الإمام جابر بن زيد الأزدي",
+                        info: "الإمام جابر بن زيد هو أحد كبار التابعين وأعلام الفقه والحديث النبوي الشريف، وأسس مدرسة فقهية عريقة تميزت بالاعتدال والعلم الغزير في البصرة وعمان.",
+                        question: "في أي حقبة تاريخية عاش الإمام جابر بن زيد واعتُبر من كبار التابعين؟",
+                        options: ["عصر التابعين", "العصر الحديث", "عصر النهضة", "عصر الدول المستقلة"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثالثة: الشاعر العماني أبو مسلم البهلاني",
+                        info: "ناصر بن مرشد البهلاني الملقب بـ (أبو مسلم البهلاني) شاعر وجهادي وصحفي عماني بارز في زنجبار وعمان، عُرف بقصائده الوطنية والدينية الخالدة في نصرة الحق والعروبة.",
+                        question: "بأي لقب يُعرف الشاعر العماني الكبير ناصر بن مرشد البهلاني؟",
+                        options: ["أبو مسلم البهلاني", "ابن خلدون", "المتنبي العماني", "أبو فراس"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الرابعة: الطبيب والعالم ابن الذهبي",
+                        info: "هو أبو محمد عبد الله بن محمد الأزدي المعروف بـ (ابن الذهبي)، وهو طبيب وعالم عماني بارز في القرن الحادي عشر الميلادي، وصنف موسوعة (الماء) الطبية الكبرى.",
+                        question: "ما اسم الموسوعة الطبية الشهيرة التي ألفها الطبيب العماني ابن الذهبي؟",
+                        options: ["موسوعة الماء", "القانون في الطب", "الحاوي", "التصريف لمن عجز عن التأليف"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الخامسة: الرحالة العماني ابن بطوطة ومحطاته",
+                        info: "رغم أن ابن بطوطة مغربي، إلا أن التاريخ العماني يزخر برحالة وملاحين كبيرا مثل ابن ماجد وغيره ممن جابوا البحار والمحيطات، وزاروا الصين والهند وأفريقيا ناشرين رسالة السلام والتجارة.",
+                        question: "من هو أبرز ملاح ورحالة عماني عالمي أسس لقواعد الملاحة البحرية الدقيقة؟",
+                        options: ["أحمد بن ماجد", "ابن بطوطة", "المسعودي", "الإدريسي"],
+                        correct: 0
+                    }
+                ]
+            },
+            "science": {
+                name: "العلوم والمعارف",
+                icon: "🔬",
+                desc: "الفلك، الطب التقليدي، التعليم الحديث، والابتكار التكنولوجي",
+                pages: [
+                    {
+                        title: "الصفحة الأولى: علم الفلك وتحديد المواقيت",
+                        info: "برع العمانيون قديماً في علم الفلك والنجوم لتحديد اتجاهات السفر البحري ومواقيت سقي الفلاحة والأفلاج وحساب فصول السنة باستخدام النجوم مثل الثريا وسهيل.",
+                        question: "ما هو النجم الشهير الذي يترقب العمانيون طلوعه للإعلان عن دخول موسم الخريف والاعتدال؟",
+                        options: ["نجم سهيل", "نجم القطب", "نجم الشعرى", "النجم الطارق"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثانية: الطب الشعبي والتداوي بالأعشاب",
+                        info: "يتمتع التراث العماني بمعرفة واسعة في الطب الشعبي والأعشاب الطبية والعلاج بالكي والوسائل التقليدية التي ورثها الأجيال عن الأجداد لمعالجة الأمراض بحكمة وخبرة عالية.",
+                        question: "ماذا يسمى الممارس التقليدي للطب الشعبي والعلاج بالأعشاب في المجتمع العماني؟",
+                        options: ["المعالج الشعبي (الطبيب التقليدي)", "المهندس", "الملاح", "النواخذة"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الثالثة: التعليم الحديث والجامعات العريقة",
+                        info: "شهد قطاع التعليم نقلة نوعية كبرى بانطلاق جامعة السلطان قابوس كمنارة علمية شامخة، إلى جانب العديد من الجامعات والكليات الحكومية والخاصة ومراكز البحث العلمي المتقدمة.",
+                        question: "ما هي أول جامعة حكومية كبرى أُسست في سلطنة عمان عام 1986؟",
+                        options: ["جامعة السلطان قابوس", "جامعة نزوى", "جامعة صحار", "الجامعة الوطنية"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الرابعة: الابتكار والذكاء الاصطناعي في عمان",
+                        info: "تخطو سلطنة عمان بخطى وثيبة نحو التحول الرقمي واقتصاد المعرفة، من خلال دعم المشاريع التقنية والابتكارات في مجالات الذكاء الاصطناعي والأقمار الصناعية والفضاء.",
+                        question: "أي قطاع تكنولوجي حديث تركز عليه سلطنة عمان ضمن خطط المستقبل الرقمي؟",
+                        options: ["الذكاء الاصطناعي وتقنيات الفضاء", "الزراعة التقليدية اليدوية فقط", "الصناعات البدائية", "التنقيب اليدوي"],
+                        correct: 0
+                    },
+                    {
+                        title: "الصفحة الخامسة: مراكز العلوم والفلك الحديثة",
+                        info: "تضم السلطنة مراكز علمية متقدمة مثل القبة الفلكية ومرصد الاستشعار عن بعد ومراكز الابتكار العلمي التي تلهم الأجيال الناشئة لحب العلوم والمعرفة والشغف بالاستكشاف.",
+                        question: "ما هو الهدف الأساسي من إنشاء مراكز العلوم والفلك والقبة الفلكية في عمان؟",
+                        options: ["نشر الثقافة العلمية وإلهام الناشئة", "التجارة والبيع", "الترفيه فقط بدون علم", "التخييم البري"],
+                        correct: 0
+                    }
+                ]
+            }
+        };
+
+        // Render Categories on Main View
+        const categoriesGrid = document.getElementById('categoriesGrid');
+        Object.keys(encyclopediaData).forEach(key => {
+            const cat = encyclopediaData[key];
+            const card = document.createElement('div');
+            card.className = 'category-card';
+            card.onclick = () => openCategory(key);
+            card.innerHTML = `
+                <div class="category-icon">${cat.icon}</div>
+                <h3 class="category-title">${cat.name}</h3>
+                <p class="category-desc">${cat.desc}</p>
+            `;
+            categoriesGrid.appendChild(card);
+        });
+
+        // Initialize QR Codes
+        window.addEventListener('DOMContentLoaded', () => {
+            new QRious({ element: document.getElementById('qr1'), value: 'https://youtu.be/IJu64RX_9x8?si=FCP2MDO6q6X5nIGM', size: 140, background: '#FFF8F0', foreground: '#FF6B6B' });
+            new QRious({ element: document.getElementById('qr2'), value: 'https://mcsy.om/literary-forum-visuals/?playlist=ab7fd1e&video=4a544c4', size: 140, background: '#FFF8F0', foreground: '#4ECDC4' });
+            new QRious({ element: document.getElementById('qr3'), value: 'https://mcsy.om/literary-forum-visuals/?playlist=ab7fd1e&video=46c75b8', size: 140, background: '#FFF8F0', foreground: '#9B5DE5' });
+            new QRious({ element: document.getElementById('qr4'), value: 'https://mcsy.om/literary-forum-visuals/?playlist=ab7fd1e&video=6036371', size: 140, background: '#FFF8F0', foreground: '#F77F00' });
+        });
+
+        function showMainView() {
+            document.getElementById('subView').classList.remove('active');
+            document.getElementById('mainView').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let currentCategoryKey = '';
+
+        function openCategory(key) {
+            currentCategoryKey = key;
+            const cat = encyclopediaData[key];
+            document.getElementById('currentCategoryTitle').innerText = `${cat.icon} قسم ${cat.name}`;
+            
+            // Build tabs
+            const tabsContainer = document.getElementById('subpagesTabs');
+            tabsContainer.innerHTML = '';
+            
+            // Build content boxes
+            const contentContainer = document.getElementById('subpagesContentContainer');
+            contentContainer.innerHTML = '';
+
+            cat.pages.forEach((page, index) => {
+                // Tab
+                const tab = document.createElement('div');
+                tab.className = `subpage-tab ${index === 0 ? 'active' : ''}`;
+                tab.innerText = `الصفحة ${index + 1}`;
+                tab.onclick = () => switchSubpage(index);
+                tabsContainer.appendChild(tab);
+
+                // Content box
+                const box = document.createElement('div');
+                box.className = `subpage-content-box ${index === 0 ? 'active' : ''}`;
+                box.id = `subpage-box-${index}`;
+                
+                // Build options HTML
+                let optionsHtml = '';
+                page.options.forEach((opt, optIdx) => {
+                    optionsHtml += `<li class="option-item" onclick="checkAnswer(this, ${optIdx}, ${page.correct}, ${index})">${opt}</li>`;
+                });
+
+                box.innerHTML = `
+                    <h3 class="subpage-title">${page.title}</h3>
+                    <div class="info-section">
+                        <div class="section-heading">📖 تفاصيل المعرفة</div>
+                        <p class="info-text">${page.info}</p>
+                    </div>
+                    <div class="quiz-section">
+                        <div class="section-heading">❓ اختبار المعرفة وسؤال الصفحة</div>
+                        <div class="question-box">
+                            <p class="question-text">${page.question}</p>
+                            <ul class="options-list">${optionsHtml}</ul>
+                            <div class="feedback" id="feedback-${index}"></div>
+                        </div>
+                    </div>
+                `;
+                contentContainer.appendChild(box);
+            });
+
+            document.getElementById('mainView').classList.remove('active');
+            document.getElementById('subView').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchSubpage(index) {
+            const cat = encyclopediaData[currentCategoryKey];
+            // Update tabs
+            const tabs = document.querySelectorAll('.subpage-tab');
+            tabs.forEach((t, i) => {
+                if(i === index) t.classList.add('active');
+                else t.classList.remove('active');
+            });
+
+            // Update boxes
+            const boxes = document.querySelectorAll('.subpage-content-box');
+            boxes.forEach((b, i) => {
+                if(i === index) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+        }
+
+        function checkAnswer(element, selectedIdx, correctIdx, pageIndex) {
+            const parentList = element.parentElement;
+            const items = parentList.querySelectorAll('.option-item');
+            const feedback = document.getElementById(`feedback-${pageIndex}`);
+
+            // Disable further clicks on this question
+            items.forEach(item => item.style.pointerEvents = 'none');
+
+            if (selectedIdx === correctIdx) {
+                element.classList.add('correct');
+                feedback.style.color = '#38A169';
+                feedback.innerText = '🎉 إجابة صحيحة! أحسنت.';
+            } else {
+                element.classList.add('incorrect');
+                items[correctIdx].classList.add('correct');
+                feedback.style.color = '#E53E3E';
+                feedback.innerText = '❌ إجابة غير صحيحة. الإجابة الصحيحة محددة باللون الأخضر.';
+            }
+        }
+    </script>
+</body>
+</html>
+ 
+ 
